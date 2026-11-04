@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [Unreleased]
+
+### Fixed
+
+- Fixed SystemVerilog highlighting of `mailbox`/`semaphore` and `virtual interface` declarations, which were treated as module instantiations and could leak the instantiation scope into following lines.
+- Stopped SystemVerilog parameterized declarations such as `my_class #(8) obj;` from leaking the module instantiation scope past the end of the statement.
+
 ## [1.29.0] - 2026-07-12
 
 ### Changed
