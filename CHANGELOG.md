@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 - Fixed SystemVerilog highlighting of `mailbox`/`semaphore` and `virtual interface` declarations, which were treated as module instantiations and could leak the instantiation scope into following lines.
 - Stopped SystemVerilog parameterized declarations such as `my_class #(8) obj;` from leaking the module instantiation scope past the end of the statement.
+- Highlighted SystemVerilog constructor calls `new(...)` as a keyword, consistent with `new;`, and `mailbox`/`semaphore` in function and task argument lists.
 
 ## [1.29.0] - 2026-07-12
 

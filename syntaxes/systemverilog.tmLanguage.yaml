@@ -71,6 +71,7 @@ repository:
               - include: '#selects'
           '6':
             name: entity.name.function.systemverilog
+      - include: '#builtin-class-types'
       - include: '#keywords'
       - include: '#port-net-parameter'
       - include: '#base-grammar'
@@ -387,7 +388,7 @@ repository:
     match: '[ \t\r\n]*\b(?:rand|randc)\b'
     name: storage.type.rand.systemverilog
   builtin-class-types:
-    begin: '[ \t\r\n]*\b(mailbox|semaphore)\b'
+    begin: ',?[ \t\r\n]*\b(mailbox|semaphore)\b'
     beginCaptures:
       '1':
         name: storage.type.built-in.systemverilog
@@ -493,7 +494,7 @@ repository:
       - include: '#identifiers'
     name: meta.module.no_parameters.systemverilog
   functions:
-    match: '[ \t\r\n]*\b(?!while|for|if|iff|else|case|casex|casez)([a-zA-Z_][a-zA-Z0-9_$]*)(?=[ \t\r\n]*\()'
+    match: '[ \t\r\n]*\b(?!while|for|if|iff|else|case|casex|casez|new\b)([a-zA-Z_][a-zA-Z0-9_$]*)(?=[ \t\r\n]*\()'
     name: entity.name.function.systemverilog
   all-types:
     patterns:

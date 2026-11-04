@@ -25,6 +25,16 @@ class env;
   virtual bus_if #(.WIDTH(8)).master vif4;
   int after10;
 
+  function new(mailbox #(Packet) mbx_a, semaphore sem_a);
+    mbx2 = mbx_a;
+  endfunction
+  task make();
+    mbx1 = new;
+    mbx3 = new(mbx_a);
+    vif0 = new (mbx_a, 4);
+    new_item(mbx_a);
+  endtask
+
   virtual function void build();
   endfunction
   virtual task run();
