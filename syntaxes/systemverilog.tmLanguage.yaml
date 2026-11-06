@@ -71,7 +71,7 @@ repository:
       '2':
         name: keyword.control.systemverilog
       '3':
-        name: keyword.operator.logical.systemverilog
+        name: keyword.operator.wordlike.systemverilog
       '4':
         name: keyword.control.systemverilog
       '5':
@@ -346,7 +346,7 @@ repository:
       - include: '#sv-rand'
   sv-control:
     match: >-
-      [ \t\r\n]*\b(initial|always|always_comb|always_ff|always_latch|final|assign|deassign|force|release|wait|forever|repeat|alias|while|for|if|iff|else|case|casex|casez|default|endcase|return|break|continue|do|foreach|clocking|coverpoint|property|bins|binsof|illegal_bins|ignore_bins|randcase|matches|solve|before|expect|cross|ref|srandom|struct|chandle|tagged|extern|throughout|timeprecision|timeunit|priority|type|union|wait_order|triggered|randsequence|context|pure|wildcard|new|forkjoin|unique|unique0|priority)\b
+      [ \t\r\n]*\b(initial|always|always_comb|always_ff|always_latch|final|assign|deassign|force|release|wait|forever|repeat|alias|while|for|if|iff|else|case|casex|casez|default|endcase|return|break|continue|do|foreach|clocking|coverpoint|property|bins|binsof|illegal_bins|ignore_bins|randcase|matches|solve|before|soft|expect|cross|ref|srandom|struct|chandle|tagged|extern|throughout|timeprecision|timeunit|priority|type|union|wait_order|triggered|randsequence|context|pure|wildcard|new|forkjoin|unique|unique0|priority)\b
     captures:
       '1':
         name: keyword.control.systemverilog
@@ -601,7 +601,12 @@ repository:
         name: keyword.operator.quantifier.regexp
   operators:
     patterns:
-      - match: \b(?:dist|inside|with|intersect|and|or|throughout|within|first_match)\b|:=|:/|\|->|\|=>|->>|\*>|#-#|#=#|&&&
+      # Word operators get keyword.operator.wordlike, the scope VS Code themes
+      # color like keywords (as for new/instanceof in other languages), so
+      # dist/inside/with stand out from symbol operators.
+      - match: \b(?:dist|inside|with|intersect|and|or|throughout|within|first_match)\b
+        name: keyword.operator.wordlike.systemverilog
+      - match: :=|:/|\|->|\|=>|->>|\*>|#-#|#=#|&&&
         name: keyword.operator.logical.systemverilog
       - match: '@|##|#|->|<->'
         name: keyword.operator.channel.systemverilog
