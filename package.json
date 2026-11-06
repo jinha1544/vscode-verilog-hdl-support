@@ -206,7 +206,8 @@
           "storage.type.userdefined.systemverilog",
           "support.type.scope.systemverilog",
           "support.function.port.systemverilog",
-          "variable.other.module.systemverilog"
+          "variable.other.module.systemverilog",
+          "meta.unpaired-keyword.systemverilog"
         ]
       },
       {

@@ -10,8 +10,14 @@ patterns:
   - include: '#comments'
   - include: '#strings'
   - include: '#typedef-enum-struct-union'
+  - include: '#typedef-class'
   - include: '#typedef'
   - include: '#functions'
+  - include: '#virtual-interface'
+  - include: '#builtin-class-types'
+  - include: '#function-task-prototype'
+  - include: '#fork-control'
+  - include: '#interface-class'
   - include: '#keywords'
   - include: '#tables'
   - include: '#function-task'
@@ -49,6 +55,80 @@ repository:
       '0':
         name: punctuation.definition.function.end.systemverilog
     patterns:
+      - include: '#function-task-body'
+    name: meta.function.systemverilog
+  function-task-prototype:
+    # Function/task headers that have no endfunction/endtask: extern and pure
+    # virtual prototypes, DPI import/export, and covergroup "with function
+    # sample". The function/task keyword gets meta.unpaired-keyword, which
+    # package.json lists in unbalancedBracketScopes, so bracket pair
+    # colorization does not show it as an unclosed bracket.
+    begin: >-
+      [ \t\r\n]*\b(?:(extern)|(pure)|(with)|(import|export)[ \t\r\n]+("DPI(?:-C)?"))((?:[ \t\r\n]+(?:virtual|static|protected|local|context|pure|forkjoin)\b)*)[ \t\r\n]+(?:([a-zA-Z_][a-zA-Z0-9_$]*)[ \t\r\n]*(=)[ \t\r\n]*)?(function|task)\b(?:[ \t\r\n]+\b(static|automatic)\b)?
+    beginCaptures:
+      '1':
+        name: keyword.control.systemverilog
+      '2':
+        name: keyword.control.systemverilog
+      '3':
+        name: keyword.operator.wordlike.systemverilog
+      '4':
+        name: keyword.control.systemverilog
+      '5':
+        patterns:
+          - include: '#strings'
+      '6':
+        patterns:
+          - include: '#keywords'
+      '7':
+        name: entity.name.function.systemverilog
+      '8':
+        name: keyword.operator.assignment.systemverilog
+      '9':
+        name: meta.unpaired-keyword.systemverilog storage.type.function.systemverilog
+      '10':
+        name: storage.modifier.systemverilog
+    end: ;
+    endCaptures:
+      '0':
+        name: punctuation.definition.function.end.systemverilog
+    patterns:
+      - include: '#function-task-body'
+    name: meta.function.systemverilog
+  fork-control:
+    # "disable fork;" and "wait fork;" have no join. Mark fork as unpaired so
+    # bracket pair colorization does not show it as an unclosed bracket.
+    match: '[ \t\r\n]*\b(?:(disable)|(wait))[ \t\r\n]+(fork)\b'
+    captures:
+      '1':
+        name: keyword.other.systemverilog
+      '2':
+        name: keyword.control.systemverilog
+      '3':
+        name: meta.unpaired-keyword.systemverilog keyword.control.systemverilog
+  typedef-class:
+    # Forward declaration "typedef [interface] class name;" has no endclass.
+    match: '[ \t\r\n]*\b(typedef)[ \t\r\n]+(?:(interface)[ \t\r\n]+)?(class)[ \t\r\n]+([a-zA-Z_][a-zA-Z0-9_$]*)(?![a-zA-Z0-9_$])'
+    captures:
+      '1':
+        name: keyword.control.systemverilog
+      '2':
+        name: meta.unpaired-keyword.systemverilog keyword.control.systemverilog
+      '3':
+        name: meta.unpaired-keyword.systemverilog storage.type.class.systemverilog
+      '4':
+        name: entity.name.type.class.systemverilog
+    name: meta.typedef.systemverilog
+  interface-class:
+    # "interface class name ... endclass": the class body closes with
+    # endclass, so interface is unpaired. The class part is left to
+    # #class-declaration.
+    match: '[ \t\r\n]*\b(interface)(?=[ \t\r\n]+class\b)'
+    captures:
+      '1':
+        name: meta.unpaired-keyword.systemverilog keyword.control.systemverilog
+  function-task-body:
+    patterns:
       - match: >-
           [ \t\r\n]*(?:(?<![a-zA-Z0-9_$])([a-zA-Z_][a-zA-Z0-9_$]*)(::))?([a-zA-Z_][a-zA-Z0-9_$]*(?![a-zA-Z0-9_$])[ \t\r\n]+)?(?:\b(signed|unsigned)\b[ \t\r\n]*)?(?:(\[[a-zA-Z0-9_:$\.\-\+\*/%`' \t\r\n\[\]\(\)]*\])[ \t\r\n]*)?(?:(?<![a-zA-Z0-9_$])([a-zA-Z_][a-zA-Z0-9_$]*)(?![a-zA-Z0-9_$])[ \t\r\n]*)(?=\(|;)
         captures:
@@ -69,11 +149,11 @@ repository:
               - include: '#selects'
           '6':
             name: entity.name.function.systemverilog
+      - include: '#builtin-class-types'
       - include: '#keywords'
       - include: '#port-net-parameter'
       - include: '#base-grammar'
       - include: '#identifiers'
-    name: meta.function.systemverilog
   typedef:
     begin: >-
       [ \t\r\n]*\b(?:(typedef)[ \t\r\n]+)(?:([a-zA-Z_][a-zA-Z0-9_$]*)(?:[ \t\r\n]+\b(signed|unsigned)\b)?(?:[ \t\r\n]*(\[[a-zA-Z0-9_:$\.\-\+\*/%`' \t\r\n\[\]\(\)]*\])?))?(?=[ \t\r\n]*[a-zA-Z_\\])
@@ -266,7 +346,7 @@ repository:
       - include: '#sv-rand'
   sv-control:
     match: >-
-      [ \t\r\n]*\b(initial|always|always_comb|always_ff|always_latch|final|assign|deassign|force|release|wait|forever|repeat|alias|while|for|if|iff|else|case|casex|casez|default|endcase|return|break|continue|do|foreach|clocking|coverpoint|property|bins|binsof|illegal_bins|ignore_bins|randcase|matches|solve|before|expect|cross|ref|srandom|struct|chandle|tagged|extern|throughout|timeprecision|timeunit|priority|type|union|wait_order|triggered|randsequence|context|pure|wildcard|new|forkjoin|unique|unique0|priority)\b
+      [ \t\r\n]*\b(initial|always|always_comb|always_ff|always_latch|final|assign|deassign|force|release|wait|forever|repeat|alias|while|for|if|iff|else|case|casex|casez|default|endcase|return|break|continue|do|foreach|clocking|coverpoint|property|bins|binsof|illegal_bins|ignore_bins|randcase|matches|solve|before|soft|expect|cross|ref|srandom|struct|chandle|tagged|extern|throughout|timeprecision|timeunit|priority|type|union|wait_order|triggered|randsequence|context|pure|wildcard|new|forkjoin|unique|unique0|priority)\b
     captures:
       '1':
         name: keyword.control.systemverilog
@@ -384,6 +464,54 @@ repository:
   sv-rand:
     match: '[ \t\r\n]*\b(?:rand|randc)\b'
     name: storage.type.rand.systemverilog
+  builtin-class-types:
+    begin: ',?[ \t\r\n]*\b(mailbox|semaphore)\b'
+    beginCaptures:
+      '1':
+        name: storage.type.built-in.systemverilog
+    end: '(?=[ \t\r\n]*[^ \t\r\n#])'
+    patterns:
+      - include: '#type-parameter-list'
+  virtual-interface:
+    begin: >-
+      [ \t\r\n]*\b(virtual)[ \t\r\n]+(?:(interface)[ \t\r\n]+)?(?!(?:function|task|class)\b)([a-zA-Z_][a-zA-Z0-9_$]*)(?![a-zA-Z0-9_$])
+    beginCaptures:
+      '1':
+        name: keyword.other.systemverilog
+      '2':
+        name: meta.unpaired-keyword.systemverilog keyword.control.systemverilog
+      '3':
+        name: storage.type.interface.systemverilog
+    end: '(?=[ \t\r\n]*[^ \t\r\n#.])'
+    patterns:
+      - include: '#type-parameter-list'
+      - match: '(\.)[ \t\r\n]*([a-zA-Z_][a-zA-Z0-9_$]*)'
+        captures:
+          '2':
+            name: storage.type.interface.systemverilog
+  type-parameter-list:
+    begin: '(#)[ \t\r\n]*(\()'
+    beginCaptures:
+      '1':
+        name: keyword.operator.channel.systemverilog
+      '2':
+        name: punctuation.section.parameters.begin
+    end: \)
+    endCaptures:
+      '0':
+        name: punctuation.section.parameters.end
+    patterns:
+      - include: '#type-parameter-list'
+      - include: '#module-binding'
+      - include: '#comments'
+      - include: '#constants'
+      - include: '#operators'
+      - include: '#strings'
+      - include: '#storage-scope'
+      - include: '#built-ins'
+      - match: '[a-zA-Z_][a-zA-Z0-9_$]*'
+        name: storage.type.user-defined.systemverilog
+    name: meta.parameters.systemverilog
   module-parameters:
     begin: >-
       ^[ \t]*\b(?:(bind)[ \t]+([a-zA-Z_][a-zA-Z0-9_$\.]*)[ \t]+)?(?!\b(?:intersect|and|or|throughout|within)\b)([a-zA-Z_][a-zA-Z0-9_$]*)[ \t]*(?=#[^#]|$)
@@ -394,7 +522,7 @@ repository:
         name: entity.name.type.module.systemverilog
       '3':
         name: entity.name.type.module.systemverilog
-    end: \)(?:[ \t\r\n]*(;))?
+    end: \)(?:[ \t\r\n]*(;))?|(?=;)
     endCaptures:
       '1':
         name: punctuation.module.instantiation.end.systemverilog
@@ -443,7 +571,7 @@ repository:
       - include: '#identifiers'
     name: meta.module.no_parameters.systemverilog
   functions:
-    match: '[ \t\r\n]*\b(?!while|for|if|iff|else|case|casex|casez)([a-zA-Z_][a-zA-Z0-9_$]*)(?=[ \t\r\n]*\()'
+    match: '[ \t\r\n]*\b(?!while|for|if|iff|else|case|casex|casez|new\b)([a-zA-Z_][a-zA-Z0-9_$]*)(?=[ \t\r\n]*\()'
     name: entity.name.function.systemverilog
   all-types:
     patterns:
@@ -473,7 +601,12 @@ repository:
         name: keyword.operator.quantifier.regexp
   operators:
     patterns:
-      - match: \b(?:dist|inside|with|intersect|and|or|throughout|within|first_match)\b|:=|:/|\|->|\|=>|->>|\*>|#-#|#=#|&&&
+      # Word operators get keyword.operator.wordlike, the scope VS Code themes
+      # color like keywords (as for new/instanceof in other languages), so
+      # dist/inside/with stand out from symbol operators.
+      - match: \b(?:dist|inside|with|intersect|and|or|throughout|within|first_match)\b
+        name: keyword.operator.wordlike.systemverilog
+      - match: :=|:/|\|->|\|=>|->>|\*>|#-#|#=#|&&&
         name: keyword.operator.logical.systemverilog
       - match: '@|##|#|->|<->'
         name: keyword.operator.channel.systemverilog

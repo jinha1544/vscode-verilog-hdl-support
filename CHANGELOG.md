@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [Unreleased]
+
+### Fixed
+
+- Fixed SystemVerilog highlighting of `mailbox`/`semaphore` and `virtual interface` declarations, which were treated as module instantiations and could leak the instantiation scope into following lines.
+- Stopped SystemVerilog parameterized declarations such as `my_class #(8) obj;` from leaking the module instantiation scope past the end of the statement.
+- Highlighted SystemVerilog constructor calls `new(...)` as a keyword, consistent with `new;`, and `mailbox`/`semaphore` in function and task argument lists.
+- Stopped bracket pair colorization from marking SystemVerilog keywords without a closing keyword as unmatched: `disable fork`, `wait fork`, `extern` and `pure virtual` function/task prototypes, DPI `import`/`export`, covergroup `with function sample`, `interface class`, `virtual interface`, and `typedef class` forward declarations.
+- Highlighted SystemVerilog word operators (`dist`, `inside`, `with`, `intersect`, `and`, `or`, `throughout`, `within`, `first_match`) as `keyword.operator.wordlike` so themes color them like keywords, and recognized `soft` in constraints as a keyword.
+
 ## [1.29.0] - 2026-07-12
 
 ### Changed
